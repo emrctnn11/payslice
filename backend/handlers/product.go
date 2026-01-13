@@ -31,7 +31,7 @@ func (h *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request) {
 			continue
 		}
 		products = append(products, p)
-
-		json.NewEncoder(w).Encode(products)
 	}
+
+	json.NewEncoder(w).Encode(products)
 }

@@ -1,35 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import "./App.css";
+import type { Product } from "./types";
+import { getProducts } from "./api/products";
+import { PorductCard } from "./components/ProductCard";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const data = await getProducts();
+        setProducts(data);
+      } catch {
+        setError("Failed");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const handleBuy = (product: Product) => {
+    console.log("Initiating purchase for: ", product.name);
+    //TODO: Connect to Order Service.
+    alert(`Buying ${product.name}... Integration coming next!`);
+  };
+  if (loading)
+    return (
+      <div className="text-center p-10 text-gray-500">Loading Store...</div>
+    );
+  if (error)
+    return (
+      <div className="text-center p-10 text-red-500 font-bold">{error}</div>
+    );
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="min-h-screen bg-gray-50 p-8">
+      <header className="mb-12 text-center max-w-4xl mx-auto">
+        <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight mb-2">
+          PaySlice Store 🍕
+        </h1>
+        <p className="text-gray-500">Buy now, pay later. Zero friction.</p>
+      </header>
+
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {products.map((product) => (
+          <PorductCard key={product.id} product={product} onBuy={handleBuy} />
+        ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </div>
+  );
 }
 
-export default App
+export default App;
