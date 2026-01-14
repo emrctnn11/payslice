@@ -3,11 +3,13 @@ import "./App.css";
 import type { Product } from "./types";
 import { getProducts } from "./api/products";
 import { PorductCard } from "./components/ProductCard";
+import { createOrder } from "./api/orders";
 
 function App() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [buyingId, setBuyingId] = useState<number | null>(null);
 
   useEffect(() => {
     const loadData = async () => {
@@ -24,10 +26,29 @@ function App() {
     loadData();
   }, []);
 
-  const handleBuy = (product: Product) => {
+  const handleBuy = async (product: Product) => {
     console.log("Initiating purchase for: ", product.name);
-    //TODO: Connect to Order Service.
-    alert(`Buying ${product.name}... Integration coming next!`);
+    try {
+      setBuyingId(product.id); //loading spinner on button
+
+      const order = await createOrder(product.id);
+
+      alert(
+        `Order Placed Successfully!\nOrder ID: ${order.id}\nStatus: ${order.status}`
+      );
+
+      setProducts((currentProducts) =>
+        currentProducts.map(
+          (p) =>
+            p.id === product.id ? { ...p, inventory: p.inventory - 1 } : p //
+        )
+      );
+    } catch (err) {
+      console.error(err);
+      alert("failed to place order.");
+    } finally {
+      setBuyingId(null);
+    }
   };
   if (loading)
     return (
