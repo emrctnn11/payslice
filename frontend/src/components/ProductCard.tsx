@@ -3,9 +3,10 @@ import type { Product } from "../types";
 interface ProductCardProps {
   product: Product;
   onBuy: (product: Product) => void;
+  isBuying: boolean;
 }
 
-export const PorductCard = ({ product, onBuy }: ProductCardProps) => {
+export const PorductCard = ({ product, onBuy, isBuying }: ProductCardProps) => {
   // helper for currency formatter.
   const formatPrice = (cents: number) => {
     return new Intl.NumberFormat("en-US", {
@@ -42,10 +43,10 @@ export const PorductCard = ({ product, onBuy }: ProductCardProps) => {
 
         <button
           onClick={() => onBuy(product)}
-          disabled={product.inventory === 0}
+          disabled={product.inventory === 0 || isBuying}
           className="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-indigo-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
         >
-          Buy with PaySlice
+          {isBuying ? "Buying..." : "Buy with PaySlice"}
         </button>
       </div>
     </div>

@@ -70,7 +70,12 @@ function App() {
 
       <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {products.map((product) => (
-          <PorductCard key={product.id} product={product} onBuy={handleBuy} />
+          <PorductCard
+            key={product.id}
+            product={product}
+            onBuy={handleBuy}
+            isBuying={buyingId === product.id}
+          />
         ))}
       </div>
     </div>
